@@ -1,6 +1,7 @@
 import { Product } from '../models/Product';
 import { Request, Response } from 'express';
 
+// Get all products
 export const getAllProducts = async (_req: Request, res: Response) => {
   try {
     const products = await Product.find();
@@ -10,10 +11,11 @@ export const getAllProducts = async (_req: Request, res: Response) => {
   }
 };
 
-export const getProductById = async (req: Request, res: Response) => {
+// Get single product by code
+export const getProductByCode = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const product = await Product.findById(id);
+    const { code } = req.params;
+    const product = await Product.findOne({ code });
 
     if (!product) {
       res.status(404).json({ message: 'Product not found' });
@@ -26,10 +28,25 @@ export const getProductById = async (req: Request, res: Response) => {
   }
 };
 
+// Create product
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const { name, price, description, quantity } = req.body;
-    const product = new Product({ name, price, description, quantity });
+    const { code, name, price, description, quantity, categories } = req.body;
+
+    const existing = await Product.findOne({ code });
+    if (existing) {
+      res.status(400).json({ message: 'Product code must be unique' });
+      return;
+    }
+
+    const product = new Product({
+      code,
+      name,
+      price,
+      description,
+      quantity,
+      categories,
+    });
     await product.save();
     res.status(201).json(product);
   } catch (error) {
@@ -37,26 +54,30 @@ export const createProduct = async (req: Request, res: Response) => {
   }
 };
 
+// Update product by code
 export const updateProduct = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const updated = await Product.findByIdAndUpdate(id, req.body, {
+    const { code } = req.params;
+    const updated = await Product.findOneAndUpdate({ code }, req.body, {
       new: true,
     });
+
     if (!updated) {
       res.status(404).json({ message: 'Product not found' });
       return;
     }
+
     res.json(updated);
   } catch (err) {
     res.status(500).json({ message: 'Failed to update product', error: err });
   }
 };
 
+// Delete product by code
 export const deleteProduct = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const deleted = await Product.findByIdAndDelete(id);
+    const { code } = req.params;
+    const deleted = await Product.findOneAndDelete({ code });
 
     if (!deleted) {
       res.status(404).json({ message: 'Product not found' });
