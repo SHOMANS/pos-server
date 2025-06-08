@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/pos-db';
+const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/pos-db';
 
 export const connectDB = async () => {
   try {
