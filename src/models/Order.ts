@@ -16,12 +16,14 @@ interface IOrder extends Document {
   discount?: number;
   total: number;
   paymentMethod: 'cash' | 'card' | 'mobile_money';
+  tenant: Types.ObjectId; // Reference to Tenant
 }
 
 const orderSchema = new Schema<IOrder>(
   {
     customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
     cashier: { type: Schema.Types.ObjectId, ref: 'User' },
+    tenant: { type: Schema.Types.ObjectId, ref: 'Tenant', required: true },
 
     products: [
       {

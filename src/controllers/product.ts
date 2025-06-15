@@ -2,9 +2,11 @@ import { Product } from '../models/Product';
 import { Request, Response } from 'express';
 
 // Get all products
-export const getAllProducts = async (_req: Request, res: Response) => {
+export const getAllProducts = async (req: Request, res: Response) => {
   try {
-    const products = await Product.find();
+    const { tenantId } = (req as any).user;
+
+    const products = await Product.find({ tenant: tenantId });
     res.json(products);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch products', error: err });
@@ -14,8 +16,9 @@ export const getAllProducts = async (_req: Request, res: Response) => {
 // Get single product by code
 export const getProductByCode = async (req: Request, res: Response) => {
   try {
+    const { tenantId } = (req as any).user;
     const { code } = req.params;
-    const product = await Product.findOne({ code });
+    const product = await Product.findOne({ code, tenant: tenantId });
 
     if (!product) {
       res.status(404).json({ message: 'Product not found' });
@@ -32,8 +35,8 @@ export const getProductByCode = async (req: Request, res: Response) => {
 export const createProduct = async (req: Request, res: Response) => {
   try {
     const { code, name, price, description, quantity, categories } = req.body;
-
-    const existing = await Product.findOne({ code });
+    const { tenantId } = (req as any).user;
+    const existing = await Product.findOne({ code, tenant: tenantId });
     if (existing) {
       res.status(400).json({ message: 'Product code must be unique' });
       return;
@@ -46,6 +49,7 @@ export const createProduct = async (req: Request, res: Response) => {
       description,
       quantity,
       categories,
+      tenant: tenantId,
     });
     await product.save();
     res.status(201).json(product);
@@ -58,9 +62,14 @@ export const createProduct = async (req: Request, res: Response) => {
 export const updateProduct = async (req: Request, res: Response) => {
   try {
     const { code } = req.params;
-    const updated = await Product.findOneAndUpdate({ code }, req.body, {
-      new: true,
-    });
+    const { tenantId } = (req as any).user;
+    const updated = await Product.findOneAndUpdate(
+      { code, tenant: tenantId },
+      req.body,
+      {
+        new: true,
+      }
+    );
 
     if (!updated) {
       res.status(404).json({ message: 'Product not found' });
@@ -77,7 +86,8 @@ export const updateProduct = async (req: Request, res: Response) => {
 export const deleteProduct = async (req: Request, res: Response) => {
   try {
     const { code } = req.params;
-    const deleted = await Product.findOneAndDelete({ code });
+    const { tenantId } = (req as any).user;
+    const deleted = await Product.findOneAndDelete({ code, tenant: tenantId });
 
     if (!deleted) {
       res.status(404).json({ message: 'Product not found' });

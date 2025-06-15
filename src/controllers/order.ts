@@ -9,14 +9,26 @@ const vat = 0.15;
 // Checkout (Create Order)
 export const checkoutOrder = async (req: Request, res: Response) => {
   try {
-    const { customerId, cashierId, products } = req.body;
+    const { userId, tenantId } = (req as any).user;
+    const { customerId, products } = req.body;
+
     // Validate customer and cashier
-    const customer = await Customer.findById(customerId);
-    const cashier = await User.findById(cashierId);
-    // if (!customer || !cashier) {
-    //   res.status(400).json({ message: 'Invalid customer or cashier' });
-    //   return;
-    // }
+
+    let customer = null;
+
+    if (customerId) {
+      customer = await Customer.findById(customerId);
+      if (!customer) {
+        res.status(400).json({ message: 'Invalid customer' });
+        return;
+      }
+    }
+
+    const cashier = await User.findById(userId);
+    if (!cashier) {
+      res.status(400).json({ message: 'Invalid cashier' });
+      return;
+    }
 
     // Prepare product list with full details
     let calculatedSubtotal = 0;
@@ -47,12 +59,13 @@ export const checkoutOrder = async (req: Request, res: Response) => {
 
     const order = await Order.create({
       customer: customerId,
-      cashier: cashierId,
+      cashier: cashier._id,
       products: orderProducts,
       subtotal: calculatedSubtotal,
       vat: (calculatedSubtotal * vat).toFixed(2),
       discount,
       total,
+      tenant: tenantId,
     });
 
     res.status(201).json(order);
@@ -64,7 +77,8 @@ export const checkoutOrder = async (req: Request, res: Response) => {
 // Get All Orders
 export const getAllOrders = async (_req: Request, res: Response) => {
   try {
-    const orders = await Order.find()
+    const { tenantId } = (_req as any).user;
+    const orders = await Order.find({ tenant: tenantId })
       .populate('customer', 'name phone email')
       .populate('cashier', 'name')
       .populate('products.productDetails', 'name code description categories');

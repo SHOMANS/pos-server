@@ -6,6 +6,7 @@ export interface ICategory extends Document {
   parent?: Types.ObjectId; // Reference to parent category (optional)
   createdAt: Date;
   updatedAt: Date;
+  tenant: Types.ObjectId; // Reference to the tenant
 }
 
 const categorySchema = new Schema<ICategory>(
@@ -13,6 +14,7 @@ const categorySchema = new Schema<ICategory>(
     name: { type: String, required: true, unique: true },
     description: { type: String },
     parent: { type: Schema.Types.ObjectId, ref: 'Category', default: null },
+    tenant: { type: Schema.Types.ObjectId, ref: 'Tenant', required: true },
   },
   { timestamps: true }
 );

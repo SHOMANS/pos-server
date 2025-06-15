@@ -6,8 +6,11 @@ import {
   getOrdersByCustomer,
   deleteOrder,
 } from '../controllers/order';
+import { authMiddleware } from '../middlewares/guards/authGuard';
 
 const router = express.Router();
+
+router.use(authMiddleware);
 
 router.post('/checkout', checkoutOrder);
 router.get('/', getAllOrders);
