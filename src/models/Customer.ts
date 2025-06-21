@@ -1,4 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
+import { MODEL_NAMES } from '../constants/models';
 
 export interface ICustomer extends Document {
   name: string;
@@ -12,9 +13,13 @@ const customerSchema = new Schema<ICustomer>(
     name: { type: String, required: true },
     phone: { type: String, required: true },
     email: { type: String },
-    tenant: { type: Schema.Types.ObjectId, ref: 'Tenant', required: true },
+    tenant: {
+      type: Schema.Types.ObjectId,
+      ref: MODEL_NAMES.TENANT,
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-export const Customer = model<ICustomer>('Customer', customerSchema);
+export const Customer = model<ICustomer>(MODEL_NAMES.CUSTOMER, customerSchema);

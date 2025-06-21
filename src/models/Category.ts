@@ -1,4 +1,5 @@
 import { Schema, model, Document, Types } from 'mongoose';
+import { MODEL_NAMES } from '../constants/models';
 
 export interface ICategory extends Document {
   name: string;
@@ -13,10 +14,18 @@ const categorySchema = new Schema<ICategory>(
   {
     name: { type: String, required: true, unique: true },
     description: { type: String },
-    parent: { type: Schema.Types.ObjectId, ref: 'Category', default: null },
-    tenant: { type: Schema.Types.ObjectId, ref: 'Tenant', required: true },
+    parent: {
+      type: Schema.Types.ObjectId,
+      ref: MODEL_NAMES.CATEGORY,
+      default: null,
+    },
+    tenant: {
+      type: Schema.Types.ObjectId,
+      ref: MODEL_NAMES.TENANT,
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-export const Category = model<ICategory>('Category', categorySchema);
+export const Category = model<ICategory>(MODEL_NAMES.CATEGORY, categorySchema);

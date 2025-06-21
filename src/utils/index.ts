@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
+import { ROLE_NAMES } from '../constants/roles';
 import Role from '../models/Role';
 
 const defaultRoles = [
   {
-    name: 'admin',
+    name: ROLE_NAMES.ADMIN,
     permissions: [
       'product:create',
       'product:update',
@@ -16,7 +17,7 @@ const defaultRoles = [
     ],
   },
   {
-    name: 'manager',
+    name: ROLE_NAMES.MANAGER,
     permissions: [
       'product:create',
       'product:update',
@@ -25,7 +26,7 @@ const defaultRoles = [
     ],
   },
   {
-    name: 'cashier',
+    name: ROLE_NAMES.CASHIER,
     permissions: ['order:view', 'order:refund', 'inventory:view'],
   },
 ];

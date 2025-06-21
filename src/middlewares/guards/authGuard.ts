@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../../utils/jwt';
+import { JwtPayload } from 'jsonwebtoken';
 
-interface AuthPayload {
+export interface AuthPayload extends JwtPayload {
   userId: string;
   tenantId: string;
-  roleId: string;
-  iat: number;
-  exp: number;
+  roleId?: string;
 }
 
 // Extend Express Request type
@@ -14,7 +13,7 @@ export interface AuthenticatedRequest extends Request {
   user?: AuthPayload;
 }
 
-export const authMiddleware = (
+export const authGuard = (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction

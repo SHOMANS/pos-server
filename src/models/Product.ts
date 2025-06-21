@@ -1,4 +1,5 @@
 import { Schema, model, Document, Types } from 'mongoose';
+import { MODEL_NAMES } from '../constants/models';
 
 export interface IProduct extends Document {
   code: string;
@@ -21,11 +22,14 @@ const productSchema = new Schema<IProduct>(
     quantity: { type: Number, default: 0 },
     tenant: {
       type: Schema.Types.ObjectId,
-      ref: 'Tenant',
+      ref: MODEL_NAMES.TENANT,
       required: true,
       select: false,
     },
-    categories: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
+    categories: {
+      type: [{ type: Schema.Types.ObjectId, ref: MODEL_NAMES.CATEGORY }],
+      default: [],
+    },
   },
   { timestamps: true }
 );
@@ -33,4 +37,6 @@ const productSchema = new Schema<IProduct>(
 // ✅ Add compound unique index: code + tenant
 productSchema.index({ code: 1, tenant: 1 }, { unique: true });
 
-export const Product = model<IProduct>('Product', productSchema);
+export const PRODUCT_MODEL_NAME = 'Product';
+
+export const Product = model<IProduct>(PRODUCT_MODEL_NAME, productSchema);

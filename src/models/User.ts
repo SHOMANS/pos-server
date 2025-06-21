@@ -1,4 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
+import { MODEL_NAMES } from '../constants/models';
 
 export interface IUser extends Document {
   name: string;
@@ -12,11 +13,19 @@ const userSchema = new Schema<IUser>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    tenant: { type: Schema.Types.ObjectId, ref: 'Tenant', required: true },
+    tenant: {
+      type: Schema.Types.ObjectId,
+      ref: MODEL_NAMES.TENANT,
+      required: true,
+    },
     password: { type: String, required: true, select: false },
-    role: { type: Schema.Types.ObjectId, ref: 'Role', required: true },
+    role: {
+      type: Schema.Types.ObjectId,
+      ref: MODEL_NAMES.ROLE,
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-export const User = model<IUser>('User', userSchema);
+export const User = model<IUser>(MODEL_NAMES.USER, userSchema);

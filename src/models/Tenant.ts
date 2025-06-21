@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import { MODEL_NAMES } from '../constants/models';
 
 export interface ITenant extends Document {
   name: string;
@@ -15,4 +16,4 @@ const TenantSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.model<ITenant>('Tenant', TenantSchema);
+export default mongoose.model<ITenant>(MODEL_NAMES.TENANT, TenantSchema);

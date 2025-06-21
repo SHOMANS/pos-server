@@ -1,7 +1,9 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import { MODEL_NAMES } from '../constants/models';
+import { ROLE_NAMES } from '../constants/roles';
 
 export interface IRole extends Document {
-  name: 'admin' | 'manager' | 'cashier';
+  name: ROLE_NAMES.ADMIN | ROLE_NAMES.MANAGER | ROLE_NAMES.CASHIER;
   tenant: mongoose.Types.ObjectId;
   permissions: string[];
   createdAt: Date;
@@ -12,12 +14,12 @@ const RoleSchema: Schema = new Schema(
   {
     name: {
       type: String,
-      enum: ['admin', 'manager', 'cashier'],
+      enum: [ROLE_NAMES.ADMIN, ROLE_NAMES.MANAGER, ROLE_NAMES.CASHIER],
       required: true,
     },
     tenant: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Tenant',
+      ref: MODEL_NAMES.TENANT,
       required: true,
     },
     permissions: [{ type: String, required: true }],
@@ -25,4 +27,4 @@ const RoleSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.model<IRole>('Role', RoleSchema);
+export default mongoose.model<IRole>(MODEL_NAMES.ROLE, RoleSchema);

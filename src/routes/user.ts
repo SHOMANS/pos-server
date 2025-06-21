@@ -6,11 +6,11 @@ import {
   getProfileInfo,
   getUserDetail,
 } from '../controllers/user';
-import { authMiddleware } from '../middlewares/guards/authGuard';
+import { authGuard } from '../middlewares/guards/authGuard';
 
 const router = express.Router();
 
-router.use(authMiddleware);
+router.use(authGuard);
 
 router.get('/', getAllUsers);
 router.get('/profile', getProfileInfo);

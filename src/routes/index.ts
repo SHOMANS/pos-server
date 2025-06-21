@@ -6,8 +6,10 @@ import userRouter from './user';
 import cors from 'cors';
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+
+// Middlewares
+app.use(cors()); // Enable CORS for all routes
+app.use(express.json()); // Parse JSON bodies
 
 app.use('/auth', authRouter);
 app.use('/users', userRouter);

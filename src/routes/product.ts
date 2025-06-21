@@ -6,11 +6,11 @@ import {
   updateProduct,
   deleteProduct,
 } from '../controllers/product';
-import { authMiddleware } from '../middlewares/guards/authGuard';
+import { authGuard } from '../middlewares/guards/authGuard';
 
 const router = Router();
 
-router.use(authMiddleware);
+router.use(authGuard);
 
 router.get('/', getAllProducts);
 router.get('/:code', getProductByCode);

@@ -1,3 +1,4 @@
+import { ROLE_NAMES } from '../constants/roles';
 import Role from '../models/Role';
 import Tenant from '../models/Tenant';
 import { User } from '../models/User';
@@ -22,7 +23,10 @@ export const createAdminUser = async (req: Request, res: Response) => {
 
     // 2️⃣ Create default roles
     await createDefaultRolesForTenant(tenant._id as any);
-    const adminRole = await Role.findOne({ tenant: tenant._id, name: 'admin' });
+    const adminRole = await Role.findOne({
+      tenant: tenant._id,
+      name: ROLE_NAMES.ADMIN,
+    });
 
     if (!adminRole) {
       throw new Error('Admin role creation failed');
@@ -41,8 +45,8 @@ export const createAdminUser = async (req: Request, res: Response) => {
 
     // 4️⃣ Generate JWT
     const token = generateToken({
-      userId: user._id,
-      tenantId: (user.tenant as any)._id.toString(),
+      userId: user._id as string,
+      tenantId: tenant._id as string,
     });
 
     res.status(201).json({
@@ -52,7 +56,7 @@ export const createAdminUser = async (req: Request, res: Response) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        tenant: tenant._id,
+        tenant: tenant,
         role: adminRole.name,
       },
     });
@@ -94,7 +98,7 @@ export const login = async (req: Request, res: Response) => {
 
     // Generate token
     const token = generateToken({
-      userId: user._id,
+      userId: user._id as string,
       tenantId: (user.tenant as any)._id.toString(),
     });
 

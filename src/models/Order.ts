@@ -1,4 +1,7 @@
 import { Schema, model, Document, Types } from 'mongoose';
+import { PRODUCT_MODEL_NAME } from './Product';
+import { MODEL_NAMES } from '../constants/models';
+import { PAYMENT_TYPES } from '../constants/orders';
 
 interface IOrder extends Document {
   customer: Types.ObjectId; // Reference to Customer
@@ -15,22 +18,26 @@ interface IOrder extends Document {
   vat: number;
   discount?: number;
   total: number;
-  paymentMethod: 'cash' | 'card' | 'mobile_money';
+  paymentMethod: PAYMENT_TYPES;
   tenant: Types.ObjectId; // Reference to Tenant
 }
 
 const orderSchema = new Schema<IOrder>(
   {
-    customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
-    cashier: { type: Schema.Types.ObjectId, ref: 'User' },
-    tenant: { type: Schema.Types.ObjectId, ref: 'Tenant', required: true },
+    customer: { type: Schema.Types.ObjectId, ref: MODEL_NAMES.CUSTOMER },
+    cashier: { type: Schema.Types.ObjectId, ref: MODEL_NAMES.USER },
+    tenant: {
+      type: Schema.Types.ObjectId,
+      ref: MODEL_NAMES.TENANT,
+      required: true,
+    },
 
     products: [
       {
         _id: false, // Prevent creation of an additional _id field for each product
         productDetails: {
           type: Schema.Types.ObjectId,
-          ref: 'Product',
+          ref: PRODUCT_MODEL_NAME,
           required: true,
         },
         purchasedQuantity: { type: Number, required: true },
@@ -45,12 +52,12 @@ const orderSchema = new Schema<IOrder>(
     total: { type: Number, required: true },
     paymentMethod: {
       type: String,
-      enum: ['cash', 'card', 'mobile_money'],
+      enum: [PAYMENT_TYPES.CASH, PAYMENT_TYPES.CARD, PAYMENT_TYPES.TRANSFER],
       required: true,
-      default: 'cash',
+      default: PAYMENT_TYPES.CASH,
     },
   },
   { timestamps: { createdAt: true, updatedAt: false } }
 );
 
-export const Order = model<IOrder>('Order', orderSchema);
+export const Order = model<IOrder>(MODEL_NAMES.ORDER, orderSchema);
